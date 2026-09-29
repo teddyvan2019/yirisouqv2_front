@@ -1,0 +1,111 @@
+<footer class="bg-slate-900 text-slate-400 mt-16 border-t border-slate-800 text-xs">
+  <!-- Value proposition cards -->
+  <div class="border-b border-slate-800 py-8 bg-slate-950">
+    <div class="max-w-7xl mx-auto px-4 grid grid-cols-1 md:grid-cols-4 gap-6">
+      <div class="flex items-center gap-3">
+        <div class="w-12 h-12 rounded-lg bg-amber-500/10 text-amber-400 flex items-center justify-center font-bold text-xl">
+          🛡️
+        </div>
+        <div>
+          <h4 class="text-white font-bold text-sm">Trade Assurance</h4>
+          <p class="text-slate-400 text-xs">Sécurité intégrale des paiements jusqu'à la livraison physique.</p>
+        </div>
+      </div>
+
+      <div class="flex items-center gap-3">
+        <div class="w-12 h-12 rounded-lg bg-blue-500/10 text-blue-400 flex items-center justify-center font-bold text-xl">
+          🏬
+        </div>
+        <div>
+          <h4 class="text-white font-bold text-sm">Place Multiboutique</h4>
+          <p class="text-slate-400 text-xs">Centaines de boutiques et fabricants directs sans intermédiaires.</p>
+        </div>
+      </div>
+
+      <div class="flex items-center gap-3">
+        <div class="w-12 h-12 rounded-lg bg-emerald-500/10 text-emerald-400 flex items-center justify-center font-bold text-xl">
+          🛵
+        </div>
+        <div>
+          <h4 class="text-white font-bold text-sm">Réseau Livreurs Express</h4>
+          <p class="text-slate-400 text-xs">Expédition du dernier kilomètre avec traçabilité GPS en direct.</p>
+        </div>
+      </div>
+
+      <div class="flex items-center gap-3">
+        <div class="w-12 h-12 rounded-lg bg-purple-500/10 text-purple-400 flex items-center justify-center font-bold text-xl">
+          💳
+        </div>
+        <div>
+          <h4 class="text-white font-bold text-sm">Paiements Universels</h4>
+          <p class="text-slate-400 text-xs">Orange Money, Moov Money, PayPal & Cartes Bancaires sécurisées.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Main footer links -->
+  <div class="max-w-7xl mx-auto px-4 py-12 grid grid-cols-2 md:grid-cols-5 gap-8">
+    <div class="col-span-2">
+      <div class="flex items-center gap-2 mb-3">
+        <div class="w-8 h-8 rounded bg-alibaba-orange flex items-center justify-center text-white font-bold text-xl">
+          Y
+        </div>
+        <span class="text-xl font-black text-white">Yiri<span class="text-alibaba-orange">Souq</span></span>
+      </div>
+      <p class="text-xs text-slate-400 max-w-sm mb-4">
+        Plateforme d'e-commerce et de commerce de gros international connectant les fabricants mondiaux, grossistes et acheteurs avec logistique intégrée et paiement multicanal.
+      </p>
+      
+      <!-- Payment partner badges -->
+      <div class="flex flex-wrap items-center gap-2 mt-2">
+        <span class="bg-slate-800 text-white font-bold text-[10px] px-2.5 py-1 rounded border border-slate-700 flex items-center gap-1">
+          <span class="w-2 h-2 rounded-full bg-orange-500"></span> Orange Money
+        </span>
+        <span class="bg-slate-800 text-white font-bold text-[10px] px-2.5 py-1 rounded border border-slate-700 flex items-center gap-1">
+          <span class="w-2 h-2 rounded-full bg-blue-500"></span> Moov Money
+        </span>
+        <span class="bg-slate-800 text-white font-bold text-[10px] px-2.5 py-1 rounded border border-slate-700 flex items-center gap-1">
+          <span class="w-2 h-2 rounded-full bg-sky-400"></span> PayPal
+        </span>
+        <span class="bg-slate-800 text-white font-bold text-[10px] px-2.5 py-1 rounded border border-slate-700 flex items-center gap-1">
+          <span class="w-2 h-2 rounded-full bg-indigo-500"></span> Carte Bancaire / Stripe
+        </span>
+      </div>
+    </div>
+
+    <div>
+      <h5 class="text-white font-bold mb-3 text-xs uppercase tracking-wider">Acheteurs & Import</h5>
+      <ul class="space-y-2">
+        <li><a routerLink="/" class="hover:text-amber-400 transition">Catalogue Grossiste</a></li>
+        <li><a routerLink="/" class="hover:text-amber-400 transition">Grille de Tarifs Dégressifs</a></li>
+        <li><a routerLink="/cart" class="hover:text-amber-400 transition">Panier & Commandes</a></li>
+        <li><a routerLink="/" class="hover:text-amber-400 transition">Demande de Devis (RFQ)</a></li>
+      </ul>
+    </div>
+
+    <div>
+      <h5 class="text-white font-bold mb-3 text-xs uppercase tracking-wider">Vendeurs & Boutiques</h5>
+      <ul class="space-y-2">
+        <li><a routerLink="/vendor" class="hover:text-amber-400 transition">Ouvrir une Boutique</a></li>
+        <li><a routerLink="/vendor" class="hover:text-amber-400 transition">Gestion du Catalogue</a></li>
+        <li><a routerLink="/vendor" class="hover:text-amber-400 transition">Commandes à expédier</a></li>
+        <li><a routerLink="/vendor" class="hover:text-amber-400 transition">Statut Fournisseur Gold</a></li>
+      </ul>
+    </div>
+
+    <div>
+      <h5 class="text-white font-bold mb-3 text-xs uppercase tracking-wider">Logistique & Admin</h5>
+      <ul class="space-y-2">
+        <li><a routerLink="/courier" class="hover:text-amber-400 transition">Espace Livreur Express</a></li>
+        <li><a routerLink="/admin" class="hover:text-amber-400 transition">Configuration API Paiement</a></li>
+        <li><a routerLink="/admin" class="hover:text-amber-400 transition">Simulation Transactions</a></li>
+        <li><a routerLink="/" class="hover:text-amber-400 transition">Suivi Colis en Direct</a></li>
+      </ul>
+    </div>
+  </div>
+
+  <div class="border-t border-slate-800/80 py-4 text-center text-[11px] text-slate-500">
+    © 2026 YiriV2 / YiriSouq International. Tous droits réservés. Standard International ISO/IEC 25010 compliant.
+  </div>
+</footer>

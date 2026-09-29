@@ -1,0 +1,204 @@
+<!-- Top utility bar -->
+<div class="bg-alibaba-dark text-slate-300 text-xs py-1.5 px-4 border-b border-slate-700/60">
+  <div class="max-w-7xl mx-auto flex items-center justify-between">
+    <!-- Left: Welcome & Trade Assurance notice -->
+    <div class="flex items-center gap-4">
+      <span class="flex items-center gap-1.5 text-amber-400 font-medium">
+        <svg class="w-3.5 h-3.5" fill="currentColor" viewBox="0 0 20 20">
+          <path fill-rule="evenodd" d="M10 1.944A11.954 11.954 0 012.166 5C2.056 5.649 2 6.319 2 7c0 5.225 3.34 9.67 8 11.317C14.66 16.67 18 12.225 18 7c0-.682-.057-1.35-.166-2.001A11.954 11.954 0 0110 1.944zM11 14a1 1 0 11-2 0 1 1 0 012 0zm0-7a1 1 0 10-2 0v3a1 1 0 102 0V7z" clip-rule="evenodd"></path>
+        </svg>
+        Trade Assurance Protection 100%
+      </span>
+      <span class="hidden md:inline text-slate-400">| Expéditions internationales sécurisées & Mobile Money</span>
+    </div>
+
+    <!-- Right: Currency, Language, and Quick Role Switcher -->
+    <div class="flex items-center gap-3">
+      <!-- Currency Selector -->
+      <div class="flex items-center gap-1 bg-slate-800 px-2 py-0.5 rounded border border-slate-700">
+        <span class="text-slate-400">Devise:</span>
+        <button (click)="setCurrency('USD')" [class.text-amber-400]="currencyService.currentCurrency === 'USD'" class="hover:text-white font-semibold">USD</button>
+        <span class="text-slate-600">|</span>
+        <button (click)="setCurrency('EUR')" [class.text-amber-400]="currencyService.currentCurrency === 'EUR'" class="hover:text-white font-semibold">EUR</button>
+        <span class="text-slate-600">|</span>
+        <button (click)="setCurrency('XOF')" [class.text-amber-400]="currencyService.currentCurrency === 'XOF'" class="hover:text-white font-semibold">XOF (FCFA)</button>
+        <span class="text-slate-600">|</span>
+        <button (click)="setCurrency('CNY')" [class.text-amber-400]="currencyService.currentCurrency === 'CNY'" class="hover:text-white font-semibold">CNY</button>
+      </div>
+
+      <!-- Language Selector -->
+      <div class="flex items-center gap-1 bg-slate-800 px-2 py-0.5 rounded border border-slate-700">
+        <button (click)="setLanguage('FR')" [class.text-amber-400]="langService.currentLang === 'FR'" class="hover:text-white font-semibold">FR</button>
+        <span class="text-slate-600">/</span>
+        <button (click)="setLanguage('EN')" [class.text-amber-400]="langService.currentLang === 'EN'" class="hover:text-white font-semibold">EN</button>
+      </div>
+
+      <!-- User Authentication Status & Sign In Link -->
+      <div *ngIf="auth.isAuthenticated()" class="flex items-center gap-2">
+        <span class="text-slate-300 text-xs">
+          <span class="text-amber-400 font-bold">[{{ auth.currentUser?.role }}]</span> {{ auth.currentUser?.name }}
+        </span>
+        <button (click)="logout()" class="text-slate-400 hover:text-white underline text-xs ml-1">
+          Déconnexion
+        </button>
+      </div>
+
+      <a *ngIf="!auth.isAuthenticated()" routerLink="/auth" class="flex items-center gap-1 bg-amber-500 hover:bg-amber-600 text-slate-950 font-bold px-3 py-0.5 rounded shadow-sm transition">
+        <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 16l-4-4m0 0l4-4m-4 4h14m-5 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h7a3 3 0 013 3v1"></path></svg>
+        <span>Se Connecter</span>
+      </a>
+    </div>
+  </div>
+</div>
+
+<!-- Main Marketplace Header -->
+<header class="bg-white border-b border-slate-200 sticky top-0 z-40 shadow-sm">
+  <div class="max-w-7xl mx-auto px-4 py-3 flex items-center justify-between gap-4">
+    <!-- Brand Logo -->
+    <a routerLink="/" class="flex items-center gap-2 text-decoration-none">
+      <div class="w-10 h-10 rounded-lg bg-gradient-to-tr from-amber-600 via-alibaba-orange to-amber-500 flex items-center justify-center text-white font-extrabold text-2xl shadow-md">
+        Y
+      </div>
+      <div>
+        <div class="text-2xl font-black tracking-tight text-slate-900 flex items-center leading-none">
+          Yiri<span class="text-alibaba-orange">Souq</span>
+          <span class="ml-1 text-[10px] uppercase font-bold tracking-widest bg-amber-100 text-amber-800 px-1.5 py-0.5 rounded">v2</span>
+        </div>
+        <div class="text-[10px] text-slate-500 font-semibold tracking-wider uppercase">B2B Global Trade & Logistics</div>
+      </div>
+    </a>
+
+    <!-- Alibaba-style Large Search Bar -->
+    <div class="flex-1 max-w-2xl hidden md:flex items-center border-2 border-alibaba-orange rounded-full overflow-hidden shadow-sm focus-within:ring-2 focus-within:ring-amber-400">
+      <select 
+        [(ngModel)]="selectedCategory" 
+        class="bg-slate-50 text-slate-700 text-xs px-3 py-2.5 border-r border-slate-200 focus:outline-none">
+        <option value="">{{ langService.t('categories') }}</option>
+        <option *ngFor="let cat of categories" [value]="cat.slug">{{ cat.name }}</option>
+      </select>
+
+      <input 
+        type="text" 
+        [(ngModel)]="searchQuery" 
+        (keyup.enter)="onSearch()"
+        [placeholder]="langService.t('search_placeholder')"
+        class="flex-1 px-4 py-2 text-sm text-slate-800 focus:outline-none" />
+
+      <button 
+        (click)="onSearch()"
+        class="bg-alibaba-orange hover:bg-alibaba-hover text-white px-6 py-2.5 font-bold text-sm flex items-center gap-1.5 transition">
+        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path></svg>
+        <span>Rechercher</span>
+      </button>
+    </div>
+
+    <!-- Right Actions: Dashboards, User & Cart -->
+    <div class="flex items-center gap-4">
+      <!-- Portal Link according to Role -->
+      <a *ngIf="auth.isAdmin()" routerLink="/admin" class="hidden sm:flex items-center gap-1.5 text-xs font-bold text-blue-700 bg-blue-50 border border-blue-200 px-3 py-2 rounded-lg hover:bg-blue-100 transition">
+        <span>⚙️ Admin Panel</span>
+      </a>
+
+      <a *ngIf="auth.isVendor()" routerLink="/vendor" class="hidden sm:flex items-center gap-1.5 text-xs font-bold text-amber-700 bg-amber-50 border border-amber-200 px-3 py-2 rounded-lg hover:bg-amber-100 transition">
+        <span>🏬 Ma Boutique</span>
+      </a>
+
+      <a *ngIf="auth.isDelivery()" routerLink="/courier" class="hidden sm:flex items-center gap-1.5 text-xs font-bold text-emerald-700 bg-emerald-50 border border-emerald-200 px-3 py-2 rounded-lg hover:bg-emerald-100 transition">
+        <span>🛵 Espace Livreur</span>
+      </a>
+
+      <!-- User Menu -->
+      <div class="relative">
+        <button 
+          (click)="showUserDropdown = !showUserDropdown"
+          class="flex items-center gap-2 p-1.5 rounded-lg hover:bg-slate-100 transition">
+          <img 
+            [src]="auth.currentUser?.avatar || 'https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?w=100'" 
+            class="w-8 h-8 rounded-full border border-slate-300 object-cover" 
+            alt="Avatar" />
+          <div class="text-left hidden lg:block">
+            <div class="text-xs font-bold text-slate-800 leading-none truncate max-w-[120px]">
+              {{ auth.currentUser?.name || 'Mon Compte' }}
+            </div>
+            <div class="text-[10px] text-slate-500">{{ auth.currentUser?.role || 'Se connecter' }}</div>
+          </div>
+        </button>
+
+        <!-- Dropdown Menu -->
+        <div *ngIf="showUserDropdown" class="absolute right-0 mt-2 w-48 bg-white rounded-lg shadow-elevated border border-slate-200 py-1 z-50">
+          <div *ngIf="auth.isAuthenticated()" class="px-4 py-2 border-b border-slate-100">
+            <p class="text-xs font-bold text-slate-900">{{ auth.currentUser?.name }}</p>
+            <p class="text-[11px] text-slate-500 truncate">{{ auth.currentUser?.email }}</p>
+          </div>
+
+          <a *ngIf="auth.isAdmin()" routerLink="/admin" (click)="showUserDropdown=false" class="block px-4 py-2 text-xs text-slate-700 hover:bg-slate-50 font-medium">Panneau Administrateur</a>
+          <a *ngIf="auth.isVendor()" routerLink="/vendor" (click)="showUserDropdown=false" class="block px-4 py-2 text-xs text-slate-700 hover:bg-slate-50 font-medium">Tableau Boutique Vendeur</a>
+          <a *ngIf="auth.isDelivery()" routerLink="/courier" (click)="showUserDropdown=false" class="block px-4 py-2 text-xs text-slate-700 hover:bg-slate-50 font-medium">Missions de Livraison</a>
+          <a routerLink="/cart" (click)="showUserDropdown=false" class="block px-4 py-2 text-xs text-slate-700 hover:bg-slate-50 font-medium">Mes Commandes / Panier</a>
+          
+          <div class="border-t border-slate-100 my-1"></div>
+          
+          <button *ngIf="auth.isAuthenticated()" (click)="logout()" class="w-full text-left px-4 py-2 text-xs text-red-600 hover:bg-red-50 font-medium">
+            Déconnexion
+          </button>
+          <a *ngIf="!auth.isAuthenticated()" routerLink="/auth" (click)="showUserDropdown=false" class="block px-4 py-2 text-xs text-alibaba-orange font-bold hover:bg-slate-50">
+            Connexion / Inscription
+          </a>
+        </div>
+      </div>
+
+      <!-- Cart Button with Dynamic Badge -->
+      <a routerLink="/cart" class="relative flex items-center gap-2 p-2 rounded-lg bg-slate-100 hover:bg-slate-200 transition text-slate-800">
+        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z"></path>
+        </svg>
+        <span *ngIf="cart.itemCount > 0" class="absolute -top-1 -right-1 bg-alibaba-orange text-white text-[11px] font-bold w-5 h-5 rounded-full flex items-center justify-center border-2 border-white shadow-sm">
+          {{ cart.itemCount }}
+        </span>
+        <span class="hidden md:inline text-xs font-bold">{{ currencyService.format(cart.totalAmount) }}</span>
+      </a>
+    </div>
+  </div>
+
+  <!-- Secondary Navigation Bar -->
+  <div class="bg-slate-900 text-white text-xs px-4">
+    <div class="max-w-7xl mx-auto flex items-center justify-between overflow-x-auto">
+      <div class="flex items-center gap-6 py-2 whitespace-nowrap">
+        <div class="relative">
+          <button 
+            (click)="showCategoriesMenu = !showCategoriesMenu"
+            class="flex items-center gap-2 font-bold text-amber-400 hover:text-amber-300 py-1 px-2 rounded hover:bg-slate-800 transition">
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"></path></svg>
+            <span>{{ langService.t('categories') }}</span>
+          </button>
+
+          <!-- Dropdown Mega Menu -->
+          <div *ngIf="showCategoriesMenu" class="absolute left-0 mt-2 w-64 bg-white text-slate-800 rounded-lg shadow-elevated border border-slate-200 py-2 z-50">
+            <a 
+              *ngFor="let cat of categories" 
+              [routerLink]="['/']" 
+              [queryParams]="{category: cat.slug}"
+              (click)="showCategoriesMenu = false"
+              class="flex items-center justify-between px-4 py-2 hover:bg-amber-50 hover:text-alibaba-orange transition text-xs font-semibold">
+              <span>{{ cat.name }}</span>
+              <span class="text-slate-400 text-[10px]">{{ cat.products_count }} réf</span>
+            </a>
+          </div>
+        </div>
+
+        <a routerLink="/" [queryParams]="{featured: true}" class="hover:text-amber-400 transition font-medium">Offres En Vedette & Grossistes</a>
+        <a routerLink="/" [queryParams]="{category: 'industrial-machinery'}" class="hover:text-amber-400 transition font-medium">Énergie Solaire & Machines</a>
+        <a routerLink="/" [queryParams]="{category: 'agro-commodities'}" class="hover:text-amber-400 transition font-medium">Matières Premières & Agro</a>
+        <a routerLink="/" [queryParams]="{category: 'textiles-fabrics'}" class="hover:text-amber-400 transition font-medium">Textiles & Tissus Wax</a>
+        <a routerLink="/admin" *ngIf="auth.isAdmin()" class="text-blue-400 hover:text-blue-300 font-bold transition">🛡️ Vault Passerelles de Paiement</a>
+        <a routerLink="/courier" *ngIf="auth.isDelivery()" class="text-emerald-400 hover:text-emerald-300 font-bold transition">📦 Tableau de Bord Livreur</a>
+      </div>
+
+      <div class="hidden lg:flex items-center gap-4 py-2 text-slate-400 text-[11px] whitespace-nowrap">
+        <span>Garantie Trade Assurance</span>
+        <span>Inspection SGS / Phytosanitaire</span>
+        <span class="text-emerald-400 font-semibold">● 100% Paiement Sécurisé</span>
+      </div>
+    </div>
+  </div>
+</header>

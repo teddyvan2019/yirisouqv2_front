@@ -1,0 +1,206 @@
+<div class="max-w-5xl mx-auto px-4 py-8 space-y-8">
+
+  <!-- Tracking Header & Search Box -->
+  <div class="bg-gradient-to-r from-slate-900 to-indigo-950 text-white rounded-2xl shadow-elevated p-8">
+    <div class="max-w-2xl">
+      <span class="text-xs font-bold text-amber-400 uppercase tracking-wider">
+        Module Livreur & Suivi Logistique
+      </span>
+      <h1 class="text-2xl md:text-3xl font-black mt-1 mb-3">
+        Traçabilité de Livraison en Direct
+      </h1>
+      <p class="text-xs text-slate-300 mb-6">
+        Entrez votre code de suivi (ex: TRK-YIRI-883910) pour visualiser en direct l'avancement du coursier et la confirmation de remise.
+      </p>
+
+      <div class="flex items-center gap-2 bg-white/10 p-1.5 rounded-xl border border-white/20">
+        <input 
+          type="text" 
+          [(ngModel)]="searchCode" 
+          (keyup.enter)="onSearch()"
+          placeholder="Code de suivi (ex: TRK-YIRI-883910)"
+          class="flex-1 bg-transparent px-3 py-2 text-sm text-white placeholder-slate-400 focus:outline-none font-mono font-bold" />
+        <button 
+          (click)="onSearch()"
+          class="bg-alibaba-orange hover:bg-alibaba-hover text-white text-xs font-bold px-6 py-2.5 rounded-lg shadow transition">
+          Localiser
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Loading State -->
+  <div *ngIf="isLoading" class="text-center py-12">
+    <div class="inline-block animate-spin rounded-full h-8 w-8 border-4 border-alibaba-orange border-t-transparent"></div>
+    <p class="text-xs text-slate-500 mt-2 font-medium">Récupération des coordonnées du colis...</p>
+  </div>
+
+  <!-- Error Alert -->
+  <div *ngIf="!isLoading && errorMessage" class="bg-red-50 text-red-800 text-xs font-bold p-5 rounded-xl border border-red-200 text-center">
+    {{ errorMessage }}
+  </div>
+
+  <!-- Tracking Details -->
+  <div *ngIf="!isLoading && delivery" class="space-y-6">
+
+    <!-- Status Overview Card -->
+    <div class="bg-white rounded-xl shadow-card border border-slate-200/80 p-6">
+      <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-slate-100 pb-4 mb-6">
+        <div>
+          <div class="text-[11px] font-bold text-slate-400 uppercase tracking-wider">Colis N° : {{ delivery.tracking_code }}</div>
+          <h2 class="text-xl font-black text-slate-900 mt-0.5">
+            Commande {{ delivery.order?.order_number }}
+          </h2>
+        </div>
+
+        <div class="text-right">
+          <span 
+            [ngClass]="{
+              'bg-blue-100 text-blue-800': delivery.status === 'ASSIGNED',
+              'bg-amber-100 text-amber-800': delivery.status === 'PICKED_UP' || delivery.status === 'IN_TRANSIT',
+              'bg-emerald-100 text-emerald-800': delivery.status === 'DELIVERED',
+              'bg-slate-100 text-slate-700': delivery.status === 'UNASSIGNED'
+            }"
+            class="text-xs font-extrabold px-3 py-1.5 rounded-full inline-block">
+            ● {{ delivery.status }}
+          </span>
+          <div *ngIf="delivery.delivered_at" class="text-[10px] text-emerald-700 font-bold mt-1">
+            Livré le {{ delivery.delivered_at | date:'dd/MM/yyyy à HH:mm' }}
+          </div>
+        </div>
+      </div>
+
+      <!-- Visual Milestone Stepper -->
+      <div class="relative py-6">
+        <div class="grid grid-cols-4 gap-2 text-center relative z-10">
+          
+          <!-- Step 1: Assigné -->
+          <div class="space-y-2">
+            <div 
+              [class.bg-emerald-600]="isMilestoneReached('ASSIGNED')"
+              [class.bg-slate-200]="!isMilestoneReached('ASSIGNED')"
+              class="w-10 h-10 rounded-full mx-auto flex items-center justify-center text-white font-bold text-sm shadow">
+              ✓
+            </div>
+            <div class="text-xs font-bold text-slate-800">Livreur Assigné</div>
+            <div class="text-[10px] text-slate-400">Mission validée</div>
+          </div>
+
+          <!-- Step 2: Ramassé -->
+          <div class="space-y-2">
+            <div 
+              [class.bg-emerald-600]="isMilestoneReached('PICKED_UP')"
+              [class.bg-slate-200]="!isMilestoneReached('PICKED_UP')"
+              class="w-10 h-10 rounded-full mx-auto flex items-center justify-center text-white font-bold text-sm shadow">
+              📦
+            </div>
+            <div class="text-xs font-bold text-slate-800">Colis Récupéré</div>
+            <div class="text-[10px] text-slate-400">Pris en charge au dépôt</div>
+          </div>
+
+          <!-- Step 3: En Transit -->
+          <div class="space-y-2">
+            <div 
+              [class.bg-emerald-600]="isMilestoneReached('IN_TRANSIT')"
+              [class.bg-slate-200]="!isMilestoneReached('IN_TRANSIT')"
+              class="w-10 h-10 rounded-full mx-auto flex items-center justify-center text-white font-bold text-sm shadow">
+              🛵
+            </div>
+            <div class="text-xs font-bold text-slate-800">En Cours de Route</div>
+            <div class="text-[10px] text-slate-400">Acheminement final</div>
+          </div>
+
+          <!-- Step 4: Livré -->
+          <div class="space-y-2">
+            <div 
+              [class.bg-emerald-600]="isMilestoneReached('DELIVERED')"
+              [class.bg-slate-200]="!isMilestoneReached('DELIVERED')"
+              class="w-10 h-10 rounded-full mx-auto flex items-center justify-center text-white font-bold text-sm shadow">
+              🏁
+            </div>
+            <div class="text-xs font-bold text-slate-800">Colis Livré</div>
+            <div class="text-[10px] text-slate-400">Preuve validée</div>
+          </div>
+
+        </div>
+      </div>
+    </div>
+
+    <!-- 2 Columns: Driver Card & Chronological Milestone Log -->
+    <div class="grid grid-cols-1 md:grid-cols-12 gap-6">
+      
+      <!-- Driver Card (4 cols) -->
+      <div class="md:col-span-5 space-y-4">
+        <div class="bg-white rounded-xl shadow-card border border-slate-200/80 p-5 space-y-4">
+          <h3 class="text-xs font-bold text-slate-900 uppercase tracking-wider border-b border-slate-100 pb-2">
+            Agent Livreur Certifié
+          </h3>
+
+          <div *ngIf="delivery.courier" class="flex items-center gap-3">
+            <img 
+              [src]="delivery.courier.avatar || 'https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=150'" 
+              class="w-14 h-14 rounded-full object-cover border border-slate-200" 
+              alt="Livreur" />
+            <div>
+              <h4 class="font-black text-sm text-slate-900">{{ delivery.courier.name }}</h4>
+              <p class="text-xs text-slate-500 font-semibold">{{ delivery.courier.phone }}</p>
+              <span class="text-[10px] bg-emerald-100 text-emerald-800 font-bold px-2 py-0.5 rounded-full mt-1 inline-block">
+                Livreur Express Agréé
+              </span>
+            </div>
+          </div>
+
+          <div *ngIf="!delivery.courier" class="text-xs text-slate-500 italic">
+            Colis en attente d'attribution à un coursier.
+          </div>
+
+          <div class="border-t border-slate-100 pt-3 space-y-2 text-xs">
+            <div>
+              <span class="text-slate-400 block text-[10px] uppercase font-bold">Lieu d'enlèvement (Fournisseur) :</span>
+              <span class="font-semibold text-slate-800">{{ delivery.pickup_address }}</span>
+            </div>
+            <div>
+              <span class="text-slate-400 block text-[10px] uppercase font-bold">Point de chute (Client) :</span>
+              <span class="font-semibold text-slate-800">{{ delivery.dropoff_address }}</span>
+            </div>
+            <div *ngIf="delivery.proof_of_delivery_note">
+              <span class="text-slate-400 block text-[10px] uppercase font-bold">Preuve de réception :</span>
+              <span class="font-bold text-emerald-700 bg-emerald-50 p-1.5 rounded block mt-0.5">
+                {{ delivery.proof_of_delivery_note }}
+              </span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Chronological Audit Log (7 cols) -->
+      <div class="md:col-span-7">
+        <div class="bg-white rounded-xl shadow-card border border-slate-200/80 p-5 space-y-4">
+          <h3 class="text-xs font-bold text-slate-900 uppercase tracking-wider border-b border-slate-100 pb-2">
+            Historique Chronologique des Événements
+          </h3>
+
+          <div class="space-y-4 relative before:absolute before:inset-0 before:left-3 before:w-0.5 before:bg-slate-200 pl-6">
+            <div *ngFor="let log of delivery.logs" class="relative">
+              <div class="absolute -left-[27px] top-1 w-3 h-3 rounded-full bg-alibaba-orange ring-4 ring-white"></div>
+              <div>
+                <div class="flex items-center justify-between">
+                  <span class="font-bold text-xs text-slate-900 uppercase">{{ log.status }}</span>
+                  <span class="text-[10px] text-slate-400 font-mono">{{ log.logged_at | date:'dd/MM/yyyy HH:mm' }}</span>
+                </div>
+                <p class="text-xs text-slate-600 mt-0.5">{{ log.location_note }}</p>
+              </div>
+            </div>
+
+            <div *ngIf="!delivery.logs || delivery.logs.length === 0" class="text-xs text-slate-500 italic">
+              Aucun événement encore consigné pour cette expédition.
+            </div>
+          </div>
+        </div>
+      </div>
+
+    </div>
+
+  </div>
+
+</div>

@@ -1,0 +1,155 @@
+<div class="max-w-md mx-auto my-12 px-4">
+  <div class="bg-white rounded-2xl shadow-elevated border border-slate-200/80 p-8 space-y-6">
+
+    <div class="text-center space-y-1">
+      <div class="w-12 h-12 bg-alibaba-orange text-white rounded-xl font-black text-2xl flex items-center justify-center mx-auto shadow-md">
+        Y
+      </div>
+      <h1 class="text-2xl font-black text-slate-900 mt-2">
+        {{ mode === 'login' ? 'Connexion Espace Membre' : 'Créer un Compte International' }}
+      </h1>
+      <p class="text-xs text-slate-500">
+        {{ mode === 'login' ? 'Accédez à votre espace Acheteur, Boutique ou Livreur.' : 'Rejoignez la place de marché internationale.' }}
+      </p>
+    </div>
+
+    <!-- Mode Switcher Tabs -->
+    <div class="flex items-center bg-slate-100 p-1 rounded-xl text-xs font-bold">
+      <button 
+        (click)="mode = 'login'"
+        [class.bg-white]="mode === 'login'"
+        [class.shadow-sm]="mode === 'login'"
+        [class.text-slate-900]="mode === 'login'"
+        [class.text-slate-500]="mode !== 'login'"
+        class="flex-1 py-2 rounded-lg transition">
+        Se Connecter
+      </button>
+
+      <button 
+        (click)="mode = 'register'"
+        [class.bg-white]="mode === 'register'"
+        [class.shadow-sm]="mode === 'register'"
+        [class.text-slate-900]="mode === 'register'"
+        [class.text-slate-500]="mode !== 'register'"
+        class="flex-1 py-2 rounded-lg transition">
+        Créer un Compte
+      </button>
+    </div>
+
+    <!-- Error Alert -->
+    <div *ngIf="errorMessage" class="bg-red-50 text-red-800 text-xs font-semibold p-3 rounded-lg border border-red-200">
+      ⚠️ {{ errorMessage }}
+    </div>
+
+    <!-- Demo Credentials Helper (Click to fill login form) -->
+    <div *ngIf="mode === 'login'" class="bg-slate-50 border border-slate-200 rounded-xl p-3 text-xs space-y-2">
+      <div class="text-[10px] font-bold text-slate-500 uppercase tracking-wider">
+        Identifiants de démonstration (cliquer pour pré-remplir le formulaire) :
+      </div>
+      <div class="grid grid-cols-2 gap-2">
+        <button type="button" (click)="fillCredentials('ADMIN')" class="bg-white border border-slate-200 hover:border-amber-400 p-2 rounded text-[11px] text-slate-800 text-left transition shadow-xs">
+          <div class="font-bold text-slate-900">👑 Administrateur</div>
+          <div class="text-[10px] text-slate-500 truncate">admin@yiriv2.com</div>
+        </button>
+        <button type="button" (click)="fillCredentials('VENDOR')" class="bg-white border border-slate-200 hover:border-amber-400 p-2 rounded text-[11px] text-slate-800 text-left transition shadow-xs">
+          <div class="font-bold text-slate-900">🏬 Vendeur</div>
+          <div class="text-[10px] text-slate-500 truncate">vendor1@shenzhentech.cn</div>
+        </button>
+        <button type="button" (click)="fillCredentials('DELIVERY_AGENT')" class="bg-white border border-slate-200 hover:border-amber-400 p-2 rounded text-[11px] text-slate-800 text-left transition shadow-xs">
+          <div class="font-bold text-slate-900">🛵 Livreur</div>
+          <div class="text-[10px] text-slate-500 truncate">livreur1@express.com</div>
+        </button>
+        <button type="button" (click)="fillCredentials('BUYER')" class="bg-white border border-slate-200 hover:border-amber-400 p-2 rounded text-[11px] text-slate-800 text-left transition shadow-xs">
+          <div class="font-bold text-slate-900">🛒 Acheteur</div>
+          <div class="text-[10px] text-slate-500 truncate">buyer@yiriv2.com</div>
+        </button>
+      </div>
+    </div>
+
+    <!-- Login Form -->
+    <form *ngIf="mode === 'login'" (ngSubmit)="onLogin()" class="space-y-4 text-xs">
+      <div>
+        <label class="font-bold text-slate-700 block mb-1">Adresse E-mail *</label>
+        <input 
+          type="email" 
+          [(ngModel)]="loginEmail" 
+          name="email"
+          placeholder="admin@yiriv2.com"
+          required
+          class="w-full border border-slate-300 rounded-lg px-3 py-2 text-slate-800 focus:outline-none focus:ring-2 focus:ring-amber-500 font-medium" />
+      </div>
+
+      <div>
+        <label class="font-bold text-slate-700 block mb-1">Mot de Passe *</label>
+        <input 
+          type="password" 
+          [(ngModel)]="loginPassword" 
+          name="password"
+          placeholder="password123"
+          required
+          class="w-full border border-slate-300 rounded-lg px-3 py-2 text-slate-800 focus:outline-none focus:ring-2 focus:ring-amber-500 font-medium" />
+      </div>
+
+      <button 
+        type="submit"
+        [disabled]="isLoading"
+        class="w-full bg-alibaba-orange hover:bg-alibaba-hover text-white font-black text-xs py-3 rounded-lg shadow-md transition flex items-center justify-center gap-2 disabled:opacity-50">
+        <span *ngIf="isLoading" class="animate-spin">⚙️</span>
+        <span>Accéder à Mon Espace</span>
+      </button>
+    </form>
+
+    <!-- Register Form -->
+    <form *ngIf="mode === 'register'" (ngSubmit)="onRegister()" class="space-y-4 text-xs">
+      <div>
+        <label class="font-bold text-slate-700 block mb-1">Type de Compte *</label>
+        <select [(ngModel)]="regRole" name="regRole" class="w-full border border-slate-300 rounded-lg px-3 py-2 font-bold bg-white text-slate-900">
+          <option value="BUYER">Acheteur / Importateur International</option>
+          <option value="VENDOR">Boutique Vendeur / Fabricant</option>
+          <option value="DELIVERY_AGENT">Livreur Express Partenaire</option>
+        </select>
+      </div>
+
+      <div>
+        <label class="font-bold text-slate-700 block mb-1">Nom Complet *</label>
+        <input type="text" [(ngModel)]="regName" name="name" required class="w-full border border-slate-300 rounded-lg px-3 py-2 text-slate-800" />
+      </div>
+
+      <div>
+        <label class="font-bold text-slate-700 block mb-1">Adresse E-mail *</label>
+        <input type="email" [(ngModel)]="regEmail" name="email" required class="w-full border border-slate-300 rounded-lg px-3 py-2 text-slate-800" />
+      </div>
+
+      <div>
+        <label class="font-bold text-slate-700 block mb-1">Téléphone Mobile *</label>
+        <input type="text" [(ngModel)]="regPhone" name="phone" placeholder="+225 ..." required class="w-full border border-slate-300 rounded-lg px-3 py-2 text-slate-800" />
+      </div>
+
+      <!-- Extra fields for Vendor -->
+      <div *ngIf="regRole === 'VENDOR'" class="bg-amber-50 p-3 rounded-xl border border-amber-200 space-y-3">
+        <div>
+          <label class="font-bold text-slate-800 block mb-1">Nom de la Boutique / Usine *</label>
+          <input type="text" [(ngModel)]="regStoreName" name="storeName" required class="w-full border border-amber-300 rounded-lg px-3 py-2 font-bold" />
+        </div>
+        <div>
+          <label class="font-bold text-slate-800 block mb-1">Pays du Fournisseur</label>
+          <input type="text" [(ngModel)]="regStoreCountry" name="storeCountry" class="w-full border border-amber-300 rounded-lg px-3 py-2" />
+        </div>
+      </div>
+
+      <div>
+        <label class="font-bold text-slate-700 block mb-1">Mot de Passe *</label>
+        <input type="password" [(ngModel)]="regPassword" name="password" minlength="6" required class="w-full border border-slate-300 rounded-lg px-3 py-2 text-slate-800" />
+      </div>
+
+      <button 
+        type="submit"
+        [disabled]="isLoading"
+        class="w-full bg-alibaba-orange hover:bg-alibaba-hover text-white font-black text-xs py-3 rounded-lg shadow-md transition flex items-center justify-center gap-2 disabled:opacity-50">
+        <span *ngIf="isLoading" class="animate-spin">⚙️</span>
+        <span>Créer Mon Compte</span>
+      </button>
+    </form>
+
+  </div>
+</div>

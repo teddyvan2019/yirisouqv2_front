@@ -1,0 +1,1040 @@
+<div class="max-w-7xl mx-auto px-4 py-8 space-y-6">
+
+  <!-- Admin Title Banner -->
+  <div class="bg-slate-900 text-white rounded-2xl shadow-elevated p-6 space-y-4">
+    <div class="flex flex-col md:flex-row md:items-center justify-between gap-4">
+      <div>
+        <div class="inline-flex items-center gap-2 bg-amber-500/20 text-amber-300 text-xs font-bold px-3 py-1 rounded-full mb-2">
+          <span>🛡️ Tour de Contrôle Propriétaire & Super-Administrateur</span>
+        </div>
+        <h1 class="text-2xl font-black">
+          Centre de Commandement International YiriSouq
+        </h1>
+        <p class="text-xs text-slate-400 mt-1">
+          Gouvernance multi-boutique, séquestre financier Trade Assurance, flotte logistique, arbitrage des litiges et coffre-fort des API de paiement.
+        </p>
+      </div>
+
+      <!-- Quick Metrics Pill -->
+      <div *ngIf="stats" class="flex items-center gap-3 bg-slate-800/90 border border-slate-700/80 px-4 py-2.5 rounded-xl">
+        <div>
+          <div class="text-[10px] uppercase font-bold text-slate-400">GMV Plateforme</div>
+          <div class="text-base font-black text-emerald-400">{{ currencyService.format(stats.financials.total_gmv) }}</div>
+        </div>
+        <div class="w-px h-8 bg-slate-700"></div>
+        <div>
+          <div class="text-[10px] uppercase font-bold text-slate-400">Revenu Commissions ({{ stats.financials.commission_rate_percent }}%)</div>
+          <div class="text-base font-black text-amber-400">{{ currencyService.format(stats.financials.platform_revenue) }}</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 8 Pillars International Navigation Tabs -->
+    <div class="flex items-center gap-1.5 overflow-x-auto pt-2 border-t border-slate-800 text-xs font-bold">
+      <button 
+        (click)="activeTab = 'overview'"
+        [class.bg-alibaba-orange]="activeTab === 'overview'"
+        [class.text-white]="activeTab === 'overview'"
+        [class.text-slate-400]="activeTab !== 'overview'"
+        class="px-3.5 py-2 rounded-lg transition whitespace-nowrap flex items-center gap-1.5">
+        <span>📊 Vue Globale & KPIs</span>
+      </button>
+
+      <button 
+        (click)="activeTab = 'gateways'"
+        [class.bg-alibaba-orange]="activeTab === 'gateways'"
+        [class.text-white]="activeTab === 'gateways'"
+        [class.text-slate-400]="activeTab !== 'gateways'"
+        class="px-3.5 py-2 rounded-lg transition whitespace-nowrap flex items-center gap-1.5">
+        <span>💳 API Paiements (Vault)</span>
+      </button>
+
+      <button 
+        (click)="activeTab = 'stores'"
+        [class.bg-alibaba-orange]="activeTab === 'stores'"
+        [class.text-white]="activeTab === 'stores'"
+        [class.text-slate-400]="activeTab !== 'stores'"
+        class="px-3.5 py-2 rounded-lg transition whitespace-nowrap flex items-center gap-1.5">
+        <span>🏬 Boutiques & KYB</span>
+      </button>
+
+      <button 
+        (click)="activeTab = 'escrow'"
+        [class.bg-alibaba-orange]="activeTab === 'escrow'"
+        [class.text-white]="activeTab === 'escrow'"
+        [class.text-slate-400]="activeTab !== 'escrow'"
+        class="px-3.5 py-2 rounded-lg transition whitespace-nowrap flex items-center gap-1.5">
+        <span>🔒 Séquestre Trade Assurance</span>
+      </button>
+
+      <button 
+        (click)="activeTab = 'logistics'"
+        [class.bg-alibaba-orange]="activeTab === 'logistics'"
+        [class.text-white]="activeTab === 'logistics'"
+        [class.text-slate-400]="activeTab !== 'logistics'"
+        class="px-3.5 py-2 rounded-lg transition whitespace-nowrap flex items-center gap-1.5">
+        <span>🛵 Supervision Logistique</span>
+      </button>
+
+      <button 
+        (click)="activeTab = 'catalog'"
+        [class.bg-alibaba-orange]="activeTab === 'catalog'"
+        [class.text-white]="activeTab === 'catalog'"
+        [class.text-slate-400]="activeTab !== 'catalog'"
+        class="px-3.5 py-2 rounded-lg transition whitespace-nowrap flex items-center gap-1.5">
+        <span>📦 Modération Catalogue</span>
+      </button>
+
+      <button 
+        (click)="activeTab = 'disputes'"
+        [class.bg-alibaba-orange]="activeTab === 'disputes'"
+        [class.text-white]="activeTab === 'disputes'"
+        [class.text-slate-400]="activeTab !== 'disputes'"
+        class="px-3.5 py-2 rounded-lg transition whitespace-nowrap flex items-center gap-1.5">
+        <span>⚖️ Arbitrage Litiges</span>
+        <span *ngIf="stats?.counts?.open_disputes" class="bg-red-500 text-white text-[10px] px-1.5 py-0.2 rounded-full">
+          {{ stats?.counts?.open_disputes }}
+        </span>
+      </button>
+
+      <button 
+        (click)="activeTab = 'settings'"
+        [class.bg-alibaba-orange]="activeTab === 'settings'"
+        [class.text-white]="activeTab === 'settings'"
+        [class.text-slate-400]="activeTab !== 'settings'"
+        class="px-3.5 py-2 rounded-lg transition whitespace-nowrap flex items-center gap-1.5">
+        <span>⚙️ Paramètres</span>
+      </button>
+    </div>
+  </div>
+
+  <!-- TAB 1: OVERVIEW & FINANCIAL KPIS -->
+  <div *ngIf="activeTab === 'overview'" class="space-y-6">
+    <!-- Top 4 Financial KPI Cards -->
+    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+      <div class="bg-white rounded-xl border border-slate-200 p-5 shadow-sm space-y-2">
+        <div class="flex items-center justify-between text-slate-500 text-xs font-bold uppercase tracking-wider">
+          <span>Volume d'Affaires Brut (GMV)</span>
+          <span class="text-emerald-600 bg-emerald-50 px-2 py-0.5 rounded text-[11px]">En direct</span>
+        </div>
+        <div class="text-2xl font-black text-slate-900">
+          {{ currencyService.format(stats?.financials?.total_gmv || 0) }}
+        </div>
+        <div class="text-[11px] text-slate-500">
+          Sur {{ stats?.counts?.total_orders || 0 }} commandes passées
+        </div>
+      </div>
+
+      <div class="bg-white rounded-xl border border-slate-200 p-5 shadow-sm space-y-2">
+        <div class="flex items-center justify-between text-slate-500 text-xs font-bold uppercase tracking-wider">
+          <span>Revenus Plateforme (Commissions)</span>
+          <span class="text-amber-600 bg-amber-50 px-2 py-0.5 rounded text-[11px]">Taux: {{ stats?.financials?.commission_rate_percent }}%</span>
+        </div>
+        <div class="text-2xl font-black text-amber-600">
+          {{ currencyService.format(stats?.financials?.platform_revenue || 0) }}
+        </div>
+        <div class="text-[11px] text-slate-500">
+          Net perçu sur transactions validées
+        </div>
+      </div>
+
+      <div class="bg-white rounded-xl border border-slate-200 p-5 shadow-sm space-y-2">
+        <div class="flex items-center justify-between text-slate-500 text-xs font-bold uppercase tracking-wider">
+          <span>Fonds sous Séquestre (Escrow)</span>
+          <span class="text-blue-600 bg-blue-50 px-2 py-0.5 rounded text-[11px]">Trade Assurance</span>
+        </div>
+        <div class="text-2xl font-black text-blue-600">
+          {{ currencyService.format(stats?.financials?.escrow_held || 0) }}
+        </div>
+        <div class="text-[11px] text-slate-500">
+          En attente de confirmation de livraison
+        </div>
+      </div>
+
+      <div class="bg-white rounded-xl border border-slate-200 p-5 shadow-sm space-y-2">
+        <div class="flex items-center justify-between text-slate-500 text-xs font-bold uppercase tracking-wider">
+          <span>Santé & Litiges</span>
+          <span class="text-purple-600 bg-purple-50 px-2 py-0.5 rounded text-[11px]">Arbitrage B2B</span>
+        </div>
+        <div class="text-2xl font-black text-slate-900">
+          {{ stats?.counts?.open_disputes || 0 }} <span class="text-xs font-normal text-slate-500">litige(s) en cours</span>
+        </div>
+        <div class="text-[11px] text-slate-500">
+          {{ stats?.counts?.total_stores || 0 }} boutiques inscrites ({{ stats?.counts?.verified_stores }} Gold)
+        </div>
+      </div>
+    </div>
+
+    <!-- Ecosystem Balance Cards -->
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+      <!-- Ecosystem Breakdown -->
+      <div class="bg-white rounded-xl border border-slate-200 p-5 shadow-sm space-y-4">
+        <h3 class="font-extrabold text-sm text-slate-900 flex items-center justify-between">
+          <span>Acteurs de l'Écosystème</span>
+          <span class="text-xs text-slate-400">Total</span>
+        </h3>
+        <div class="space-y-3 text-xs">
+          <div class="flex items-center justify-between p-2.5 bg-slate-50 rounded-lg">
+            <span class="font-bold text-slate-700">🏬 Vendeurs & Usines</span>
+            <span class="font-black text-slate-900">{{ stats?.counts?.total_stores }} boutiques ({{ stats?.counts?.verified_stores }} certifiées)</span>
+          </div>
+          <div class="flex items-center justify-between p-2.5 bg-slate-50 rounded-lg">
+            <span class="font-bold text-slate-700">🛒 Acheteurs Internationaux</span>
+            <span class="font-black text-slate-900">{{ stats?.counts?.total_buyers }} comptes</span>
+          </div>
+          <div class="flex items-center justify-between p-2.5 bg-slate-50 rounded-lg">
+            <span class="font-bold text-slate-700">🛵 Flotte de Livreurs Partenaires</span>
+            <span class="font-black text-slate-900">{{ stats?.counts?.total_couriers }} agents actifs</span>
+          </div>
+          <div class="flex items-center justify-between p-2.5 bg-slate-50 rounded-lg">
+            <span class="font-bold text-slate-700">📦 Catalogue Produits</span>
+            <span class="font-black text-slate-900">{{ stats?.counts?.total_products }} références ({{ stats?.counts?.approved_products }} approuvées)</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Payment Gateways Volume Distribution -->
+      <div class="bg-white rounded-xl border border-slate-200 p-5 shadow-sm space-y-4">
+        <h3 class="font-extrabold text-sm text-slate-900 flex items-center justify-between">
+          <span>Volume par Passerelle</span>
+          <span class="text-xs text-slate-400">Encaissé</span>
+        </h3>
+        <div class="space-y-3 text-xs">
+          <div *ngFor="let p of stats?.payment_distribution" class="flex items-center justify-between p-2.5 bg-slate-50 rounded-lg">
+            <span class="font-bold uppercase text-slate-700">{{ p.payment_gateway_code.replace('_', ' ') }}</span>
+            <div class="text-right">
+              <div class="font-black text-slate-900">{{ currencyService.format(+p.total_amount) }}</div>
+              <div class="text-[10px] text-slate-500">{{ p.count }} transaction(s)</div>
+            </div>
+          </div>
+          <div *ngIf="!stats?.payment_distribution?.length" class="text-slate-400 text-center py-4">
+            Aucun paiement enregistré pour l'instant.
+          </div>
+        </div>
+      </div>
+
+      <!-- Logistics Missions Status -->
+      <div class="bg-white rounded-xl border border-slate-200 p-5 shadow-sm space-y-4">
+        <h3 class="font-extrabold text-sm text-slate-900 flex items-center justify-between">
+          <span>Missions Logistiques</span>
+          <span class="text-xs text-slate-400">{{ stats?.counts?.total_deliveries }} total</span>
+        </h3>
+        <div class="space-y-3 text-xs">
+          <div class="flex items-center justify-between p-2.5 bg-amber-50 rounded-lg">
+            <span class="font-bold text-amber-800">🚚 Colis en Transit</span>
+            <span class="font-black text-amber-900">{{ stats?.counts?.active_deliveries }} en cours</span>
+          </div>
+          <div class="flex items-center justify-between p-2.5 bg-emerald-50 rounded-lg">
+            <span class="font-bold text-emerald-800">✓ Livraisons Terminées</span>
+            <span class="font-black text-emerald-900">{{ stats?.counts?.completed_deliveries }} livrés</span>
+          </div>
+          <div class="flex items-center justify-between p-2.5 bg-purple-50 rounded-lg">
+            <span class="font-bold text-purple-800">🔒 Séquestres Libérés</span>
+            <span class="font-black text-purple-900">{{ currencyService.format(stats?.financials?.escrow_released || 0) }}</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- TAB 2: PAYMENT GATEWAYS MANAGEMENT (VAULT) -->
+  <div *ngIf="activeTab === 'gateways'" class="space-y-6">
+    <div class="grid grid-cols-1 lg:grid-cols-12 gap-6">
+
+      <!-- Left Gateway Selector Cards (4 cols) -->
+      <div class="lg:col-span-4 space-y-3">
+        <div class="text-xs font-bold text-slate-700 uppercase tracking-wider px-1">
+          Passerelles Disponibles ({{ gateways.length }})
+        </div>
+
+        <div 
+          *ngFor="let gw of gateways"
+          (click)="selectGateway(gw)"
+          [class.border-alibaba-orange]="selectedGateway?.code === gw.code"
+          [class.bg-amber-50]="selectedGateway?.code === gw.code"
+          [class.shadow-md]="selectedGateway?.code === gw.code"
+          class="bg-white rounded-xl border border-slate-200 p-4 cursor-pointer hover:border-slate-300 transition flex flex-col justify-between space-y-3">
+          
+          <div class="flex items-center justify-between">
+            <div class="flex items-center gap-2.5">
+              <span class="w-3 h-3 rounded-full" [ngClass]="{
+                'bg-orange-500': gw.code === 'orange_money',
+                'bg-blue-600': gw.code === 'moov_money',
+                'bg-sky-500': gw.code === 'paypal',
+                'bg-indigo-600': gw.code === 'credit_card'
+              }"></span>
+              <h3 class="font-extrabold text-sm text-slate-900">{{ gw.name }}</h3>
+            </div>
+
+            <!-- Active Pill -->
+            <span 
+              [class.bg-emerald-100]="gw.is_active"
+              [class.text-emerald-800]="gw.is_active"
+              [class.bg-slate-100]="!gw.is_active"
+              [class.text-slate-600]="!gw.is_active"
+              class="text-[10px] font-bold px-2 py-0.5 rounded-full">
+              {{ gw.is_active ? 'ACTIVE' : 'DÉSACTIVÉE' }}
+            </span>
+          </div>
+
+          <div class="flex items-center justify-between text-[11px] text-slate-500 border-t border-slate-100 pt-2">
+            <span>Environnement:</span>
+            <span class="font-bold" [class.text-amber-600]="gw.is_sandbox" [class.text-emerald-600]="!gw.is_sandbox">
+              {{ gw.is_sandbox ? 'Sandbox (Test)' : 'Production (Live)' }}
+            </span>
+          </div>
+
+          <!-- Diagnostic Test Status -->
+          <div class="flex items-center justify-between text-[11px] bg-slate-50 p-2 rounded-lg border border-slate-100">
+            <span>Dernier Test:</span>
+            <span *ngIf="gw.test_status === 'SUCCESS'" class="text-emerald-700 font-extrabold flex items-center gap-1">
+              ✓ Validé
+            </span>
+            <span *ngIf="gw.test_status === 'FAILED'" class="text-red-600 font-bold flex items-center gap-1">
+              ✕ Échoué
+            </span>
+            <span *ngIf="gw.test_status === 'PENDING'" class="text-slate-400 font-medium">
+              Non testé
+            </span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Right Editor & Diagnostic Vault (8 cols) -->
+      <div *ngIf="selectedGateway" class="lg:col-span-8 bg-white rounded-2xl border border-slate-200 shadow-sm p-6 space-y-6">
+        <div class="flex flex-col sm:flex-row sm:items-center justify-between pb-4 border-b border-slate-100 gap-4">
+          <div>
+            <div class="inline-flex items-center gap-2 text-xs font-bold uppercase tracking-wider text-slate-400">
+              Passerelle : {{ selectedGateway.code }}
+            </div>
+            <h2 class="text-xl font-black text-slate-900">{{ selectedGateway.name }}</h2>
+          </div>
+
+          <div class="flex items-center gap-2">
+            <button 
+              (click)="runDiagnosticTest(selectedGateway.code)"
+              [disabled]="isTesting"
+              class="bg-blue-50 text-blue-700 hover:bg-blue-100 border border-blue-200 text-xs font-bold px-3 py-2 rounded-lg transition flex items-center gap-1.5 disabled:opacity-50">
+              <span *ngIf="isTesting" class="animate-spin">⚙️</span>
+              <span>Test Diagnostic Ping</span>
+            </button>
+
+            <button 
+              (click)="openSimulateModal(selectedGateway.code)"
+              class="bg-emerald-50 text-emerald-700 hover:bg-emerald-100 border border-emerald-200 text-xs font-bold px-3 py-2 rounded-lg transition flex items-center gap-1.5">
+              <span>💳 Simuler Paiement</span>
+            </button>
+          </div>
+        </div>
+
+        <!-- Success & Error Banners -->
+        <div *ngIf="saveMessage" class="bg-emerald-50 text-emerald-800 text-xs font-bold p-3 rounded-lg border border-emerald-200">
+          ✓ {{ saveMessage }}
+        </div>
+        <div *ngIf="saveErrorMessage" class="bg-red-50 text-red-800 text-xs font-bold p-3 rounded-lg border border-red-200">
+          ⚠️ {{ saveErrorMessage }}
+        </div>
+
+        <!-- Diagnostic Result Alert -->
+        <div *ngIf="testResult" class="p-4 rounded-xl border text-xs" [ngClass]="testResult.success ? 'bg-emerald-50 border-emerald-200 text-emerald-900' : 'bg-red-50 border-red-200 text-red-900'">
+          <div class="flex items-center gap-2 font-bold mb-1">
+            <span>{{ testResult.success ? '✓ Connexion Vérifiée avec Succès' : '✕ Échec de la Vérification API' }}</span>
+          </div>
+          <p>{{ testResult.message }}</p>
+        </div>
+
+        <!-- Gateway Toggle Settings -->
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 bg-slate-50 p-4 rounded-xl border border-slate-100">
+          <label class="flex items-center gap-3 cursor-pointer">
+            <input type="checkbox" [(ngModel)]="editIsActive" class="w-4 h-4 text-alibaba-orange rounded" />
+            <div>
+              <div class="font-bold text-xs text-slate-800">Passerelle Activée</div>
+              <div class="text-[11px] text-slate-500">Disponible au checkout client</div>
+            </div>
+          </label>
+
+          <label class="flex items-center gap-3 cursor-pointer">
+            <input type="checkbox" [(ngModel)]="editIsSandbox" class="w-4 h-4 text-amber-500 rounded" />
+            <div>
+              <div class="font-bold text-xs text-slate-800">Mode Sandbox (Test)</div>
+              <div class="text-[11px] text-slate-500">Simuler sans débit bancaire réel</div>
+            </div>
+          </label>
+        </div>
+
+        <!-- Dynamic Credentials Inputs -->
+        <div class="space-y-4">
+          <div class="text-xs font-bold text-slate-700 uppercase tracking-wider">
+            Paramètres Secrets & Identifiants API
+          </div>
+
+          <!-- Orange Money Fields -->
+          <div *ngIf="selectedGateway.code === 'orange_money'" class="grid grid-cols-1 sm:grid-cols-2 gap-4 text-xs">
+            <div>
+              <label class="font-bold text-slate-700 block mb-1">Client ID (API Key)</label>
+              <input type="text" [(ngModel)]="editCredentials['client_id']" class="w-full border border-slate-300 rounded-lg px-3 py-2 text-slate-900 font-mono text-xs" />
+            </div>
+            <div>
+              <label class="font-bold text-slate-700 block mb-1">Client Secret</label>
+              <input type="password" [(ngModel)]="editCredentials['client_secret']" class="w-full border border-slate-300 rounded-lg px-3 py-2 text-slate-900 font-mono text-xs" />
+            </div>
+            <div>
+              <label class="font-bold text-slate-700 block mb-1">Code Marchand (Merchant Code)</label>
+              <input type="text" [(ngModel)]="editCredentials['merchant_code']" class="w-full border border-slate-300 rounded-lg px-3 py-2 text-slate-900 font-mono text-xs" />
+            </div>
+            <div>
+              <label class="font-bold text-slate-700 block mb-1">Code Pays (ISO)</label>
+              <input type="text" [(ngModel)]="editCredentials['country_code']" class="w-full border border-slate-300 rounded-lg px-3 py-2 text-slate-900 font-mono text-xs" />
+            </div>
+          </div>
+
+          <!-- Moov Money Fields -->
+          <div *ngIf="selectedGateway.code === 'moov_money'" class="grid grid-cols-1 sm:grid-cols-2 gap-4 text-xs">
+            <div>
+              <label class="font-bold text-slate-700 block mb-1">Partner ID</label>
+              <input type="text" [(ngModel)]="editCredentials['partner_id']" class="w-full border border-slate-300 rounded-lg px-3 py-2 text-slate-900 font-mono text-xs" />
+            </div>
+            <div>
+              <label class="font-bold text-slate-700 block mb-1">Partner Secret Key</label>
+              <input type="password" [(ngModel)]="editCredentials['partner_secret']" class="w-full border border-slate-300 rounded-lg px-3 py-2 text-slate-900 font-mono text-xs" />
+            </div>
+            <div>
+              <label class="font-bold text-slate-700 block mb-1">Numéro Marchand Moov</label>
+              <input type="text" [(ngModel)]="editCredentials['merchant_phone']" class="w-full border border-slate-300 rounded-lg px-3 py-2 text-slate-900 font-mono text-xs" />
+            </div>
+          </div>
+
+          <!-- PayPal Fields -->
+          <div *ngIf="selectedGateway.code === 'paypal'" class="grid grid-cols-1 sm:grid-cols-2 gap-4 text-xs">
+            <div>
+              <label class="font-bold text-slate-700 block mb-1">PayPal Client ID</label>
+              <input type="text" [(ngModel)]="editCredentials['client_id']" class="w-full border border-slate-300 rounded-lg px-3 py-2 text-slate-900 font-mono text-xs" />
+            </div>
+            <div>
+              <label class="font-bold text-slate-700 block mb-1">PayPal Secret</label>
+              <input type="password" [(ngModel)]="editCredentials['secret']" class="w-full border border-slate-300 rounded-lg px-3 py-2 text-slate-900 font-mono text-xs" />
+            </div>
+          </div>
+
+          <!-- Credit Card / Stripe Fields -->
+          <div *ngIf="selectedGateway.code === 'credit_card'" class="grid grid-cols-1 sm:grid-cols-2 gap-4 text-xs">
+            <div>
+              <label class="font-bold text-slate-700 block mb-1">Stripe Clé Publique (Publishable Key)</label>
+              <input type="text" [(ngModel)]="editCredentials['publishable_key']" class="w-full border border-slate-300 rounded-lg px-3 py-2 text-slate-900 font-mono text-xs" />
+            </div>
+            <div>
+              <label class="font-bold text-slate-700 block mb-1">Stripe Clé Secrète (Secret Key)</label>
+              <input type="password" [(ngModel)]="editCredentials['secret_key']" class="w-full border border-slate-300 rounded-lg px-3 py-2 text-slate-900 font-mono text-xs" />
+            </div>
+          </div>
+        </div>
+
+        <div class="flex items-center justify-end pt-4 border-t border-slate-100">
+          <button 
+            (click)="saveGateway()"
+            [disabled]="isSaving"
+            class="bg-alibaba-orange hover:bg-alibaba-hover text-white font-black text-xs px-6 py-2.5 rounded-lg shadow-md transition flex items-center gap-2 disabled:opacity-50">
+            <span *ngIf="isSaving" class="animate-spin">⚙️</span>
+            <span>Enregistrer dans le Coffre-Fort</span>
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- TAB 3: MULTI-VENDOR & KYB GOVERNANCE -->
+  <div *ngIf="activeTab === 'stores'" class="bg-white rounded-2xl border border-slate-200 shadow-sm p-6 space-y-4">
+    <div class="flex flex-col sm:flex-row sm:items-center justify-between pb-3 border-b border-slate-100 gap-4">
+      <div>
+        <h2 class="text-lg font-black text-slate-900">Gouvernance des Boutiques & Conformité KYB</h2>
+        <p class="text-xs text-slate-500">Validation des certificats d'exportation, attribution du badge Gold Supplier et contrôle d'activité.</p>
+      </div>
+
+      <!-- Store Search Input -->
+      <div class="flex items-center gap-2">
+        <input 
+          type="text" 
+          [(ngModel)]="storeSearch" 
+          (keyup.enter)="loadStores()"
+          placeholder="Rechercher une boutique..." 
+          class="border border-slate-300 rounded-lg px-3 py-1.5 text-xs text-slate-800" />
+        <button (click)="loadStores()" class="bg-slate-800 text-white font-bold text-xs px-3 py-1.5 rounded-lg">Filtrer</button>
+      </div>
+    </div>
+
+    <div class="overflow-x-auto">
+      <table class="w-full text-left text-xs">
+        <thead>
+          <tr class="bg-slate-50 text-slate-600 border-b border-slate-200">
+            <th class="p-3 font-bold">Boutique & Contact</th>
+            <th class="p-3 font-bold">Pays</th>
+            <th class="p-3 font-bold">Catalogue / Ventes</th>
+            <th class="p-3 font-bold">Statut KYB</th>
+            <th class="p-3 font-bold">Activité</th>
+            <th class="p-3 font-bold text-right">Actions de Contrôle</th>
+          </tr>
+        </thead>
+        <tbody class="divide-y divide-slate-100">
+          <tr *ngFor="let s of stores" class="hover:bg-slate-50">
+            <td class="p-3">
+              <div class="font-bold text-slate-900">{{ s.name }}</div>
+              <div class="text-[11px] text-slate-500">{{ s.email || 'Email non renseigné' }} | {{ s.phone }}</div>
+            </td>
+            <td class="p-3 font-semibold text-slate-700">📍 {{ s.country }}</td>
+            <td class="p-3">
+              <div class="font-bold text-slate-800">{{ s.products_count || 0 }} produit(s)</div>
+              <div class="text-[11px] text-amber-600 font-semibold">★ {{ s.rating }} ({{ s.total_sales }} commandes)</div>
+            </td>
+            <td class="p-3">
+              <span *ngIf="s.is_verified" class="bg-amber-100 text-amber-900 border border-amber-300 text-[10px] font-extrabold px-2.5 py-0.5 rounded-full">
+                ✓ Gold Supplier
+              </span>
+              <span *ngIf="!s.is_verified" class="bg-slate-100 text-slate-600 text-[10px] px-2 py-0.5 rounded-full">
+                Standard
+              </span>
+            </td>
+            <td class="p-3">
+              <span [class.bg-emerald-100]="s.is_active !== false" [class.text-emerald-800]="s.is_active !== false" [class.bg-red-100]="s.is_active === false" [class.text-red-800]="s.is_active === false" class="text-[10px] font-bold px-2 py-0.5 rounded-full">
+                {{ s.is_active !== false ? 'ACTIVE' : 'SUSPENDUE' }}
+              </span>
+            </td>
+            <td class="p-3 text-right space-x-2">
+              <button 
+                (click)="toggleStoreVerification(s)"
+                [class.bg-amber-100]="s.is_verified"
+                [class.text-amber-900]="s.is_verified"
+                [class.bg-slate-100]="!s.is_verified"
+                class="font-bold text-xs px-2.5 py-1.5 rounded-lg border transition">
+                {{ s.is_verified ? 'Retirer Gold' : 'Certifier Gold' }}
+              </button>
+
+              <button 
+                (click)="toggleStoreActive(s)"
+                [class.bg-red-50]="s.is_active !== false"
+                [class.text-red-700]="s.is_active !== false"
+                [class.bg-emerald-50]="s.is_active === false"
+                [class.text-emerald-700]="s.is_active === false"
+                class="font-bold text-xs px-2.5 py-1.5 rounded-lg border transition">
+                {{ s.is_active !== false ? 'Suspendre' : 'Réactiver' }}
+              </button>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- TAB 4: FINANCIAL ESCROW & TRADE ASSURANCE -->
+  <div *ngIf="activeTab === 'escrow'" class="bg-white rounded-2xl border border-slate-200 shadow-sm p-6 space-y-4">
+    <div class="flex flex-col sm:flex-row sm:items-center justify-between pb-3 border-b border-slate-100 gap-4">
+      <div>
+        <h2 class="text-lg font-black text-slate-900">Gestion du Séquestre Financier (Trade Assurance)</h2>
+        <p class="text-xs text-slate-500">Protection des paiements acheteurs : libération des fonds vers les marchands après validation des livraisons.</p>
+      </div>
+
+      <!-- Filter by Escrow Status -->
+      <div class="flex items-center gap-2">
+        <select [(ngModel)]="escrowFilter" (change)="loadOrders()" class="border border-slate-300 rounded-lg px-3 py-1.5 text-xs font-bold text-slate-800">
+          <option value="">Tous les états de séquestre</option>
+          <option value="HELD_IN_ESCROW">Séquestre Actif (Held in Escrow)</option>
+          <option value="RELEASED_TO_VENDOR">Fonds Débloqués (Released to Vendor)</option>
+          <option value="REFUNDED_TO_BUYER">Remboursé à l'Acheteur</option>
+        </select>
+      </div>
+    </div>
+
+    <div *ngIf="escrowFeedback" class="bg-blue-50 text-blue-800 text-xs font-bold p-3 rounded-lg border border-blue-200">
+      ℹ️ {{ escrowFeedback }}
+    </div>
+
+    <div class="overflow-x-auto">
+      <table class="w-full text-left text-xs">
+        <thead>
+          <tr class="bg-slate-50 text-slate-600 border-b border-slate-200">
+            <th class="p-3 font-bold">N° Commande</th>
+            <th class="p-3 font-bold">Acheteur</th>
+            <th class="p-3 font-bold">Boutique Marchande</th>
+            <th class="p-3 font-bold">Montant Total</th>
+            <th class="p-3 font-bold">Statut Commande</th>
+            <th class="p-3 font-bold">État du Séquestre</th>
+            <th class="p-3 font-bold text-right">Action Séquestre</th>
+          </tr>
+        </thead>
+        <tbody class="divide-y divide-slate-100">
+          <tr *ngFor="let ord of orders" class="hover:bg-slate-50">
+            <td class="p-3 font-mono font-bold text-slate-900">{{ ord.order_number }}</td>
+            <td class="p-3">
+              <div class="font-bold text-slate-800">{{ ord.shipping_name }}</div>
+              <div class="text-[11px] text-slate-500">{{ ord.shipping_country }}</div>
+            </td>
+            <td class="p-3 font-bold text-slate-800">{{ ord.store?.name }}</td>
+            <td class="p-3 font-mono font-black text-slate-900">
+              {{ ord.currency }} {{ ord.total_amount }}
+            </td>
+            <td class="p-3">
+              <span class="bg-slate-100 text-slate-700 text-[10px] font-bold px-2 py-0.5 rounded-full">
+                {{ ord.status }}
+              </span>
+            </td>
+            <td class="p-3">
+              <span *ngIf="ord.escrow_status === 'HELD_IN_ESCROW'" class="bg-blue-100 text-blue-800 text-[10px] font-bold px-2 py-0.5 rounded-full">
+                🔒 Séquestre Bloqué
+              </span>
+              <span *ngIf="ord.escrow_status === 'RELEASED_TO_VENDOR'" class="bg-emerald-100 text-emerald-800 text-[10px] font-bold px-2 py-0.5 rounded-full">
+                ✓ Fonds Débloqués
+              </span>
+              <span *ngIf="ord.escrow_status === 'REFUNDED_TO_BUYER'" class="bg-red-100 text-red-800 text-[10px] font-bold px-2 py-0.5 rounded-full">
+                ↩ Remboursé
+              </span>
+            </td>
+            <td class="p-3 text-right">
+              <button 
+                *ngIf="ord.escrow_status === 'HELD_IN_ESCROW'"
+                (click)="releaseEscrowPayout(ord)"
+                [disabled]="isReleasingEscrow"
+                class="bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-xs px-3 py-1.5 rounded-lg shadow-sm transition">
+                Débloquer Virement
+              </button>
+              <span *ngIf="ord.escrow_status !== 'HELD_IN_ESCROW'" class="text-slate-400 font-semibold text-xs">
+                Terminé
+              </span>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- TAB 5: LOGISTICS FLEET OVERSIGHT & DISPATCH -->
+  <div *ngIf="activeTab === 'logistics'" class="bg-white rounded-2xl border border-slate-200 shadow-sm p-6 space-y-4">
+    <div class="flex flex-col sm:flex-row sm:items-center justify-between pb-3 border-b border-slate-100 gap-4">
+      <div>
+        <h2 class="text-lg font-black text-slate-900">Tour de Contrôle Logistique & Flotte Livreurs</h2>
+        <p class="text-xs text-slate-500">Suivi en direct des expéditions internationales, dispatch d'urgence et audits d'étapes.</p>
+      </div>
+
+      <button (click)="loadDeliveries()" class="bg-slate-100 hover:bg-slate-200 text-slate-800 font-bold text-xs px-3 py-1.5 rounded-lg transition">
+        Actualiser Flotte
+      </button>
+    </div>
+
+    <div class="overflow-x-auto">
+      <table class="w-full text-left text-xs">
+        <thead>
+          <tr class="bg-slate-50 text-slate-600 border-b border-slate-200">
+            <th class="p-3 font-bold">Code Tracking</th>
+            <th class="p-3 font-bold">Boutique Expéditeur</th>
+            <th class="p-3 font-bold">Destination & Client</th>
+            <th class="p-3 font-bold">Livreur Assigné</th>
+            <th class="p-3 font-bold">Statut Course</th>
+            <th class="p-3 font-bold text-right">Dispatch & Réassignation</th>
+          </tr>
+        </thead>
+        <tbody class="divide-y divide-slate-100">
+          <tr *ngFor="let d of deliveries" class="hover:bg-slate-50">
+            <td class="p-3 font-mono font-bold text-alibaba-orange">
+              <a [routerLink]="['/tracking', d.tracking_code]" target="_blank" class="hover:underline">
+                {{ d.tracking_code }} ↗
+              </a>
+            </td>
+            <td class="p-3 font-bold text-slate-800">{{ d.order?.store?.name }}</td>
+            <td class="p-3">
+              <div class="font-bold text-slate-800">{{ d.dropoff_address }}</div>
+              <div class="text-[11px] text-slate-500">{{ d.order?.shipping_name }}</div>
+            </td>
+            <td class="p-3">
+              <div *ngIf="d.courier" class="font-bold text-slate-900 flex items-center gap-1.5">
+                <span>🛵 {{ d.courier.name }}</span>
+              </div>
+              <span *ngIf="!d.courier" class="text-amber-600 bg-amber-50 px-2 py-0.5 rounded text-[10px] font-bold">
+                Non assigné
+              </span>
+            </td>
+            <td class="p-3">
+              <span class="text-[10px] font-bold px-2 py-0.5 rounded-full" [ngClass]="{
+                'bg-amber-100 text-amber-800': d.status === 'IN_TRANSIT' || d.status === 'PICKED_UP',
+                'bg-emerald-100 text-emerald-800': d.status === 'DELIVERED',
+                'bg-blue-100 text-blue-800': d.status === 'ASSIGNED',
+                'bg-slate-100 text-slate-700': d.status === 'UNASSIGNED'
+              }">
+                {{ d.status }}
+              </span>
+            </td>
+            <td class="p-3 text-right">
+              <button 
+                (click)="openReassignModal(d)"
+                class="bg-blue-50 text-blue-700 hover:bg-blue-100 border border-blue-200 font-bold text-xs px-2.5 py-1.5 rounded-lg transition">
+                Réassigner
+              </button>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- TAB 6: CATALOG MODERATION & ANTI-COUNTERFEITING -->
+  <div *ngIf="activeTab === 'catalog'" class="bg-white rounded-2xl border border-slate-200 shadow-sm p-6 space-y-4">
+    <div class="flex flex-col sm:flex-row sm:items-center justify-between pb-3 border-b border-slate-100 gap-4">
+      <div>
+        <h2 class="text-lg font-black text-slate-900">Modération du Catalogue & Propriété Intellectuelle (IPR)</h2>
+        <p class="text-xs text-slate-500">Filtrage de conformité, certification CE/ISO, validation des offres de gros et lutte anti-contrefaçon.</p>
+      </div>
+
+      <div class="flex items-center gap-2">
+        <select [(ngModel)]="productFilter" (change)="loadProducts()" class="border border-slate-300 rounded-lg px-3 py-1.5 text-xs font-bold text-slate-800">
+          <option value="">Tous les statuts</option>
+          <option value="APPROVED">Approuvés</option>
+          <option value="FLAGGED">Signalés (Flagged)</option>
+        </select>
+      </div>
+    </div>
+
+    <div class="overflow-x-auto">
+      <table class="w-full text-left text-xs">
+        <thead>
+          <tr class="bg-slate-50 text-slate-600 border-b border-slate-200">
+            <th class="p-3 font-bold">Produit</th>
+            <th class="p-3 font-bold">Boutique Fournisseur</th>
+            <th class="p-3 font-bold">Prix / MOQ</th>
+            <th class="p-3 font-bold">Modération</th>
+            <th class="p-3 font-bold">Vedette (Featured)</th>
+            <th class="p-3 font-bold text-right">Actions</th>
+          </tr>
+        </thead>
+        <tbody class="divide-y divide-slate-100">
+          <tr *ngFor="let p of products" class="hover:bg-slate-50">
+            <td class="p-3">
+              <div class="font-bold text-slate-900">{{ p.name }}</div>
+              <div class="text-[11px] text-slate-400">Stock: {{ p.stock }} {{ p.unit }}</div>
+            </td>
+            <td class="p-3 font-bold text-slate-800">{{ p.store?.name }}</td>
+            <td class="p-3 font-mono font-bold text-slate-900">
+              ${{ p.base_price }} / MOQ: {{ p.moq }}
+            </td>
+            <td class="p-3">
+              <span [class.bg-emerald-100]="p.moderation_status !== 'FLAGGED'" [class.text-emerald-800]="p.moderation_status !== 'FLAGGED'" [class.bg-red-100]="p.moderation_status === 'FLAGGED'" [class.text-red-800]="p.moderation_status === 'FLAGGED'" class="text-[10px] font-bold px-2 py-0.5 rounded-full">
+                {{ p.moderation_status === 'FLAGGED' ? '🚩 SIGNALÉ' : '✓ CONFORME' }}
+              </span>
+            </td>
+            <td class="p-3">
+              <button 
+                (click)="toggleProductFeatured(p)"
+                [class.bg-amber-100]="p.is_featured"
+                [class.text-amber-900]="p.is_featured"
+                [class.bg-slate-100]="!p.is_featured"
+                class="text-[10px] font-bold px-2.5 py-1 rounded border">
+                {{ p.is_featured ? '⭐ En Vedette' : 'Standard' }}
+              </button>
+            </td>
+            <td class="p-3 text-right space-x-2">
+              <button 
+                *ngIf="p.moderation_status !== 'FLAGGED'"
+                (click)="setProductModeration(p, 'FLAGGED')"
+                class="bg-red-50 text-red-700 hover:bg-red-100 border border-red-200 font-bold text-xs px-2.5 py-1.5 rounded-lg transition">
+                Signaler / Suspendre
+              </button>
+              <button 
+                *ngIf="p.moderation_status === 'FLAGGED'"
+                (click)="setProductModeration(p, 'APPROVED')"
+                class="bg-emerald-50 text-emerald-700 hover:bg-emerald-100 border border-emerald-200 font-bold text-xs px-2.5 py-1.5 rounded-lg transition">
+                Réapprouver
+              </button>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- TAB 7: DISPUTES & B2B ARBITRATION -->
+  <div *ngIf="activeTab === 'disputes'" class="bg-white rounded-2xl border border-slate-200 shadow-sm p-6 space-y-4">
+    <div class="flex flex-col sm:flex-row sm:items-center justify-between pb-3 border-b border-slate-100 gap-4">
+      <div>
+        <h2 class="text-lg font-black text-slate-900">Centre d'Arbitrage des Litiges B2B</h2>
+        <p class="text-xs text-slate-500">Tribunal tripartite : résolution impartiale des non-conformités, avaries et retards de livraison.</p>
+      </div>
+
+      <button (click)="loadDisputes()" class="bg-slate-100 hover:bg-slate-200 text-slate-800 font-bold text-xs px-3 py-1.5 rounded-lg transition">
+        Actualiser Litiges
+      </button>
+    </div>
+
+    <div class="overflow-x-auto">
+      <table class="w-full text-left text-xs">
+        <thead>
+          <tr class="bg-slate-50 text-slate-600 border-b border-slate-200">
+            <th class="p-3 font-bold">Réf. Dossier</th>
+            <th class="p-3 font-bold">Acheteur Déclarant</th>
+            <th class="p-3 font-bold">Fournisseur Défendeur</th>
+            <th class="p-3 font-bold">Motif & Montant</th>
+            <th class="p-3 font-bold">Statut Arbitrage</th>
+            <th class="p-3 font-bold text-right">Décision d'Arbitrage</th>
+          </tr>
+        </thead>
+        <tbody class="divide-y divide-slate-100">
+          <tr *ngFor="let d of disputes" class="hover:bg-slate-50">
+            <td class="p-3 font-mono font-bold text-purple-700">{{ d.dispute_code }}</td>
+            <td class="p-3">
+              <div class="font-bold text-slate-900">{{ d.buyer?.name }}</div>
+              <div class="text-[11px] text-slate-500">{{ d.buyer?.email }}</div>
+            </td>
+            <td class="p-3 font-bold text-slate-800">{{ d.store?.name }}</td>
+            <td class="p-3">
+              <div class="font-bold text-red-600">{{ d.reason }}</div>
+              <div class="font-mono text-slate-900 font-black">{{ d.currency }} {{ d.disputed_amount }}</div>
+            </td>
+            <td class="p-3">
+              <span class="text-[10px] font-bold px-2 py-0.5 rounded-full" [ngClass]="{
+                'bg-red-100 text-red-800': d.status === 'OPEN',
+                'bg-amber-100 text-amber-800': d.status === 'UNDER_REVIEW',
+                'bg-emerald-100 text-emerald-800': d.status === 'RESOLVED_RELEASED',
+                'bg-blue-100 text-blue-800': d.status === 'RESOLVED_REFUNDED'
+              }">
+                {{ d.status }}
+              </span>
+            </td>
+            <td class="p-3 text-right">
+              <button 
+                *ngIf="d.status === 'OPEN' || d.status === 'UNDER_REVIEW'"
+                (click)="openArbitrateModal(d)"
+                class="bg-purple-600 hover:bg-purple-700 text-white font-bold text-xs px-3 py-1.5 rounded-lg shadow-sm transition">
+                Rendre Jugement
+              </button>
+              <div *ngIf="d.status !== 'OPEN' && d.status !== 'UNDER_REVIEW'" class="text-[11px] text-slate-500">
+                Jugé le {{ d.resolved_at | date:'short' }}
+              </div>
+            </td>
+          </tr>
+          <tr *ngIf="!disputes.length">
+            <td colspan="6" class="p-6 text-center text-slate-400">Aucun litige B2B en cours sur la plateforme.</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- TAB 8: GLOBAL PLATFORM SETTINGS -->
+  <div *ngIf="activeTab === 'settings' && settings" class="bg-white rounded-2xl border border-slate-200 shadow-sm p-6 space-y-6">
+    <div class="pb-3 border-b border-slate-100">
+      <h2 class="text-lg font-black text-slate-900">Paramétrage Général de la Place de Marché</h2>
+      <p class="text-xs text-slate-500">Taux de commission plateforme, règles de séquestre Trade Assurance et coordonnées officielles.</p>
+    </div>
+
+    <div *ngIf="settingsMessage" class="bg-emerald-50 text-emerald-800 text-xs font-bold p-3 rounded-lg border border-emerald-200">
+      ✓ {{ settingsMessage }}
+    </div>
+
+    <div class="grid grid-cols-1 sm:grid-cols-2 gap-6 text-xs">
+      <div>
+        <label class="font-bold text-slate-700 block mb-1">Taux de Commission Plateforme (%) *</label>
+        <input 
+          type="number" 
+          step="0.5" 
+          [(ngModel)]="settings.platform_commission_rate" 
+          class="w-full border border-slate-300 rounded-lg px-3 py-2 font-mono font-bold text-slate-900" />
+        <p class="text-[11px] text-slate-500 mt-1">Prélevé automatiquement sur chaque vente finalisée.</p>
+      </div>
+
+      <div>
+        <label class="font-bold text-slate-700 block mb-1">Délai Automatique de Déblocage Séquestre (Jours) *</label>
+        <input 
+          type="number" 
+          [(ngModel)]="settings.escrow_auto_release_days" 
+          class="w-full border border-slate-300 rounded-lg px-3 py-2 font-mono font-bold text-slate-900" />
+        <p class="text-[11px] text-slate-500 mt-1">Délai sans réclamation acheteur avant virement automatique au vendeur.</p>
+      </div>
+
+      <div>
+        <label class="font-bold text-slate-700 block mb-1">Devise Comptable de Référence</label>
+        <select [(ngModel)]="settings.default_currency" class="w-full border border-slate-300 rounded-lg px-3 py-2 font-bold bg-white text-slate-900">
+          <option value="USD">USD ($ - Dollar Américain)</option>
+          <option value="EUR">EUR (€ - Euro)</option>
+          <option value="XOF">XOF (FCFA - Franc CFA)</option>
+          <option value="CNY">CNY (¥ - Yuan Chinois)</option>
+        </select>
+      </div>
+
+      <div>
+        <label class="font-bold text-slate-700 block mb-1">Email Officiel du Centre d'Arbitrage</label>
+        <input 
+          type="email" 
+          [(ngModel)]="settings.platform_support_email" 
+          class="w-full border border-slate-300 rounded-lg px-3 py-2 font-mono text-slate-900" />
+      </div>
+    </div>
+
+    <div class="flex items-center justify-end pt-4 border-t border-slate-100">
+      <button 
+        (click)="saveSettings()"
+        [disabled]="isSavingSettings"
+        class="bg-alibaba-orange hover:bg-alibaba-hover text-white font-black text-xs px-6 py-2.5 rounded-lg shadow-md transition flex items-center gap-2 disabled:opacity-50">
+        <span *ngIf="isSavingSettings" class="animate-spin">⚙️</span>
+        <span>Mettre à Jour la Configuration</span>
+      </button>
+    </div>
+  </div>
+
+  <!-- MODAL: Logistics Reassignment -->
+  <div *ngIf="showReassignModal && selectedDelivery" class="fixed inset-0 bg-slate-950/60 backdrop-blur-sm z-50 flex items-center justify-center p-4">
+    <div class="bg-white rounded-2xl shadow-elevated border border-slate-200 max-w-md w-full p-6 space-y-4">
+      <div class="flex items-center justify-between border-b border-slate-100 pb-3">
+        <h3 class="font-black text-sm text-slate-900">Réassignation Dispatching Logistique</h3>
+        <button (click)="showReassignModal = false" class="text-slate-400 hover:text-slate-600 font-bold">✕</button>
+      </div>
+
+      <div class="text-xs space-y-3">
+        <p class="text-slate-600">Course : <strong class="text-alibaba-orange">{{ selectedDelivery.tracking_code }}</strong></p>
+
+        <div>
+          <label class="font-bold text-slate-700 block mb-1">Sélectionner le Nouveau Livreur *</label>
+          <select [(ngModel)]="reassignCourierId" class="w-full border border-slate-300 rounded-lg px-3 py-2 font-bold bg-white text-slate-900">
+            <option *ngFor="let c of availableCouriers" [value]="c.id">
+              🛵 {{ c.name }} ({{ c.phone }})
+            </option>
+          </select>
+        </div>
+
+        <div>
+          <label class="font-bold text-slate-700 block mb-1">Motif de Réassignation / Consignes</label>
+          <textarea 
+            [(ngModel)]="reassignReason" 
+            placeholder="Ex: Livreur initial indisponible, réacheminement d'urgence..." 
+            rows="3" 
+            class="w-full border border-slate-300 rounded-lg p-2.5 text-xs text-slate-800"></textarea>
+        </div>
+
+        <div *ngIf="reassignMessage" class="bg-blue-50 text-blue-800 text-xs font-bold p-2.5 rounded-lg border border-blue-200">
+          {{ reassignMessage }}
+        </div>
+      </div>
+
+      <div class="flex items-center justify-end gap-2 pt-3 border-t border-slate-100">
+        <button (click)="showReassignModal = false" class="px-3 py-1.5 text-xs font-semibold text-slate-600">Annuler</button>
+        <button 
+          (click)="executeReassignment()" 
+          [disabled]="isReassigning" 
+          class="bg-blue-600 hover:bg-blue-700 text-white font-bold text-xs px-4 py-2 rounded-lg transition disabled:opacity-50">
+          Confirmer Dispatch
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- MODAL: Arbitration Ruling -->
+  <div *ngIf="showArbitrateModal && selectedDispute" class="fixed inset-0 bg-slate-950/60 backdrop-blur-sm z-50 flex items-center justify-center p-4">
+    <div class="bg-white rounded-2xl shadow-elevated border border-slate-200 max-w-lg w-full p-6 space-y-4">
+      <div class="flex items-center justify-between border-b border-slate-100 pb-3">
+        <h3 class="font-black text-sm text-slate-900">Jugement d'Arbitrage B2B : {{ selectedDispute.dispute_code }}</h3>
+        <button (click)="showArbitrateModal = false" class="text-slate-400 hover:text-slate-600 font-bold">✕</button>
+      </div>
+
+      <div class="text-xs space-y-3">
+        <div class="bg-slate-50 p-3 rounded-xl border border-slate-200 space-y-1">
+          <div><strong>Acheteur :</strong> {{ selectedDispute.buyer?.name }} ({{ selectedDispute.currency }} {{ selectedDispute.disputed_amount }})</div>
+          <div><strong>Déclaration Acheteur :</strong> "{{ selectedDispute.buyer_statement }}"</div>
+          <div *ngIf="selectedDispute.vendor_statement"><strong>Réponse Fournisseur :</strong> "{{ selectedDispute.vendor_statement }}"</div>
+        </div>
+
+        <div>
+          <label class="font-bold text-slate-700 block mb-1">Verdict Souverain de l'Arbitre *</label>
+          <select [(ngModel)]="arbitrationDecision" class="w-full border border-slate-300 rounded-lg px-3 py-2 font-bold bg-white text-slate-900">
+            <option value="RESOLVED_REFUNDED">Ordonner Remboursement Intégral à l'Acheteur</option>
+            <option value="RESOLVED_RELEASED">Ordonner Déblocage du Paiement au Vendeur</option>
+            <option value="REJECTED">Rejeter la Réclamation (Non-fondée)</option>
+          </select>
+        </div>
+
+        <div>
+          <label class="font-bold text-slate-700 block mb-1">Motivations du Jugement / Décision Arbitrale *</label>
+          <textarea 
+            [(ngModel)]="arbitrationNotes" 
+            placeholder="Justifiez la décision basée sur les preuves fournies et les termes de l'accord B2B..." 
+            rows="3" 
+            class="w-full border border-slate-300 rounded-lg p-2.5 text-xs text-slate-800"></textarea>
+        </div>
+
+        <div *ngIf="arbitrationMessage" class="bg-purple-50 text-purple-800 text-xs font-bold p-2.5 rounded-lg border border-purple-200">
+          {{ arbitrationMessage }}
+        </div>
+      </div>
+
+      <div class="flex items-center justify-end gap-2 pt-3 border-t border-slate-100">
+        <button (click)="showArbitrateModal = false" class="px-3 py-1.5 text-xs font-semibold text-slate-600">Annuler</button>
+        <button 
+          (click)="executeArbitrationRuling()" 
+          [disabled]="isArbitrating || !arbitrationNotes" 
+          class="bg-purple-700 hover:bg-purple-800 text-white font-bold text-xs px-4 py-2 rounded-lg transition disabled:opacity-50">
+          Prononcer le Verdict
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- MODAL: Payment Simulation -->
+  <div *ngIf="showSimulateModal" class="fixed inset-0 bg-slate-950/60 backdrop-blur-sm z-50 flex items-center justify-center p-4">
+    <div class="bg-white rounded-2xl shadow-elevated border border-slate-200 max-w-lg w-full p-6 space-y-4">
+      <div class="flex items-center justify-between border-b border-slate-100 pb-3">
+        <div>
+          <h3 class="font-black text-base text-slate-900">Test de Débit & Simulation</h3>
+          <p class="text-xs text-slate-500">Passerelle : {{ simulateGatewayCode }}</p>
+        </div>
+        <button (click)="showSimulateModal = false" class="text-slate-400 hover:text-slate-600 text-lg font-bold">✕</button>
+      </div>
+
+      <div class="space-y-3 text-xs">
+        <div>
+          <label class="font-bold text-slate-700 block mb-1">Montant à simuler :</label>
+          <div class="flex items-center gap-2">
+            <input 
+              type="number" 
+              [(ngModel)]="simulateAmount" 
+              class="w-full border border-slate-300 rounded-lg px-3 py-2 font-mono font-bold text-slate-900" />
+            <select 
+              [(ngModel)]="simulateCurrency" 
+              class="border border-slate-300 rounded-lg px-3 py-2 font-bold bg-slate-50">
+              <option value="USD">USD</option>
+              <option value="EUR">EUR</option>
+              <option value="XOF">XOF</option>
+              <option value="CNY">CNY</option>
+            </select>
+          </div>
+        </div>
+
+        <div>
+          <label class="font-bold text-slate-700 block mb-1">Numéro Mobile Test (Pour Orange/Moov) :</label>
+          <input 
+            type="text" 
+            [(ngModel)]="simulatePhone" 
+            class="w-full border border-slate-300 rounded-lg px-3 py-2 font-mono font-bold text-slate-900" />
+        </div>
+      </div>
+
+      <!-- Simulation Result Output -->
+      <div *ngIf="simulateResult" class="bg-slate-900 text-slate-100 rounded-xl p-4 font-mono text-[11px] space-y-2">
+        <div class="flex items-center justify-between border-b border-slate-800 pb-1">
+          <span class="text-emerald-400 font-bold">✓ Transaction Simulée avec Succès</span>
+          <span class="text-slate-400">{{ simulateResult.result?.status }}</span>
+        </div>
+        <div class="text-slate-300">{{ simulateResult.result?.message }}</div>
+        <div class="text-amber-400">Réf: {{ simulateResult.result?.transaction_id }}</div>
+      </div>
+
+      <div class="flex items-center justify-end gap-3 pt-3 border-t border-slate-100">
+        <button 
+          (click)="showSimulateModal = false"
+          class="px-4 py-2 text-xs font-semibold text-slate-600 hover:bg-slate-100 rounded-lg transition">
+          Fermer
+        </button>
+        <button 
+          (click)="executeSimulatedTransaction()"
+          [disabled]="isSimulating"
+          class="bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-bold px-5 py-2.5 rounded-lg shadow transition flex items-center gap-1.5 disabled:opacity-50">
+          <span *ngIf="isSimulating" class="animate-spin">⚙️</span>
+          <span>Exécuter la Transaction Test</span>
+        </button>
+      </div>
+    </div>
+  </div>
+
+</div>
